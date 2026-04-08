@@ -26,4 +26,4 @@ authors = [
 "Homepage" = "https://huggingface.co/spaces/SuryaPrabhat/email-triage-env"
 
 [project.scripts]
-server = "server.app:start"
+server = "server.app:main"
