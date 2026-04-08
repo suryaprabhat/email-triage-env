@@ -9,5 +9,5 @@ COPY . .
 # Environment variables
 ENV HF_TOKEN=""
 
-# Run a self-test on container startup to verify everything is working
-CMD ["python", "-c", "from email_triage_env import EmailTriageEnv; env = EmailTriageEnv(5); obs, _ = env.reset(); print('✓ Environment ready!')"]
+# Run a self-test and keep the container alive serving files on port 7860 for Hugging Face
+CMD ["sh", "-c", "python -c 'from email_triage_env import EmailTriageEnv; print(\"✓ Environment ready!\")' && python -m http.server 7860"]
