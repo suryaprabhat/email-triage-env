@@ -7,7 +7,7 @@ name = "email-triage"
 version = "1.0.0"
 description = "Email Triage RL Environment for OpenEnv"
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 dependencies = [
     "gymnasium>=0.28.0",
     "pydantic>=2.0",
@@ -15,7 +15,8 @@ dependencies = [
     "openai>=1.0.0",
     "pyyaml>=6.0",
     "fastapi>=0.100.0",
-    "uvicorn>=0.23.0"
+    "uvicorn>=0.23.0",
+    "openenv-core>=0.2.0"
 ]
 authors = [
     { name = "SuryaPrabhat" }
@@ -23,3 +24,6 @@ authors = [
 
 [project.urls]
 "Homepage" = "https://huggingface.co/spaces/SuryaPrabhat/email-triage-env"
+
+[project.scripts]
+server = "server.app:start"

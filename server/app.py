@@ -49,3 +49,8 @@ def serve_markdown(filename: str):
     if os.path.exists(path):
         return FileResponse(path)
     return {"error": "Document not found."}
+
+def start():
+    """Entry point for the [project.scripts] server CLI command."""
+    import uvicorn
+    uvicorn.run("server.app:app", host="0.0.0.0", port=7860)
