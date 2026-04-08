@@ -1,3 +1,11 @@
+---
+title: Email Triage Env
+emoji: 📧
+colorFrom: blue
+colorTo: green
+sdk: docker
+pinned: false
+---
 # Meta OpenEnv Hackathon 2024 - Email Triage Environment
 
 ## Overview
