@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "email-triage"
+version = "1.0.0"
+description = "Email Triage RL Environment for OpenEnv"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "gymnasium>=0.28.0",
+    "pydantic>=2.0",
+    "numpy>=1.21.0",
+    "openai>=1.0.0",
+    "pyyaml>=6.0",
+    "fastapi>=0.100.0",
+    "uvicorn>=0.23.0"
+]
+authors = [
+    { name = "SuryaPrabhat" }
+]
+
+[project.urls]
+"Homepage" = "https://huggingface.co/spaces/SuryaPrabhat/email-triage-env"
