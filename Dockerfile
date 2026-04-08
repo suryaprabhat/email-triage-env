@@ -9,5 +9,5 @@ COPY . .
 # Environment variables
 ENV HF_TOKEN=""
 
-# Run a self-test and keep the container alive serving files on port 7860 for Hugging Face
-CMD ["sh", "-c", "python -c 'from email_triage_env import EmailTriageEnv; print(\"✓ Environment ready!\")' && python server.py"]
+# Expose the API to the OpenEnv grader and Hugging Face on port 7860
+CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "7860"]
