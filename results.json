@@ -1,0 +1,38 @@
+{
+  "num_emails": 5,
+  "classifications": [
+    {
+      "email_id": 1,
+      "predicted_category": "security",
+      "predicted_severity": "urgent"
+    },
+    {
+      "email_id": 2,
+      "predicted_category": "product",
+      "predicted_severity": "low"
+    },
+    {
+      "email_id": 3,
+      "predicted_category": "spam",
+      "predicted_severity": "low"
+    },
+    {
+      "email_id": 4,
+      "predicted_category": "security",
+      "predicted_severity": "urgent"
+    },
+    {
+      "email_id": 5,
+      "predicted_category": "billing",
+      "predicted_severity": "medium"
+    }
+  ],
+  "metrics": {
+    "accuracy_category": 100.0,
+    "accuracy_severity": 80.0,
+    "accuracy_both": 90.0,
+    "spam_detection_rate": 100.0,
+    "final_score": 5.0
+  },
+  "api_calls": 0
+}

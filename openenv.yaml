@@ -1,0 +1,52 @@
+name: email-triage
+version: 1.0.0
+description: "Email triage and classification environment for prioritizing real-world alerts and tickets."
+
+observation:
+  email_id: int
+  sender: str
+  subject: str
+  body: str
+  timestamp: str
+  processed: bool
+  current_category: Optional[str]
+  current_severity: Optional[str]
+  emails_processed: int
+  total_emails: int
+  score: float
+
+action:
+  email_id: int
+  category: str
+  severity: str
+  notes: Optional[str]
+
+reward:
+  formula: "accuracy_reward + efficiency_bonus + safety_penalty"
+  range: [-1.0, 1.1]
+
+tasks:
+  easy:
+    difficulty: 0.3
+    description: 5 emails with clear intent
+  medium:
+    difficulty: 0.6
+    description: 10 emails, mixed content, including some ambiguous cases
+  hard:
+    difficulty: 0.9
+    description: 20 emails with adversarial elements and complex edge-cases
+
+grading:
+  - accuracy
+  - spam_detection
+  - f1_score
+  - speed
+
+reproducibility:
+  seed_support: true
+  deterministic_eval: true
+
+implementation:
+  - python
+  - gymnasium
+  - pydantic
