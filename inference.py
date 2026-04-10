@@ -6,19 +6,26 @@ from email_triage_env import EmailTriageEnv
 
 class EmailTriageBaseline:
     def __init__(self, api_key: str, model: str = "gpt-4-turbo-preview"):
-        self.model = model
         self.use_mock = False
         
-        if not api_key or api_key.startswith("sk-your-") or api_key == "sk-...":
-            print("Warning: No valid API key provided. Using mock baseline.")
+        # Override with environment variables injected by OpenEnv LiteLLM proxy
+        actual_api_key = os.environ.get("API_KEY") or api_key
+        base_url = os.environ.get("API_BASE_URL")
+        self.model = os.environ.get("MODEL_NAME") or model
+        
+        if not actual_api_key or actual_api_key.startswith("sk-your-") or actual_api_key == "sk-...":
+            print("Warning: No valid API key provided. Using mock baseline.", flush=True)
             self.use_mock = True
             return
 
         try:
             from openai import OpenAI
-            self.client = OpenAI(api_key=api_key)
+            client_args = {"api_key": actual_api_key}
+            if base_url:
+                client_args["base_url"] = base_url
+            self.client = OpenAI(**client_args)
         except ImportError:
-            print("Warning: Please install openai (pip install openai). Using mock baseline.")
+            print("Warning: openai not installed. Using mock.", flush=True)
             self.use_mock = True
             
     def classify_email(self, sender: str, subject: str, body: str) -> Dict[str, str]:
