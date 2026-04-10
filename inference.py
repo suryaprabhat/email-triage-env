@@ -85,20 +85,20 @@ class EmailTriageBaseline:
             print(f"Error calling OpenAI API: {e}")
             return {"category": "other", "severity": "low"}
 
-    def run_evaluation(self, num_emails: int, seed: int, output_file: str = "results.json"):
+    def run_evaluation(self, task_name: str, num_emails: int, seed: int, output_file: str = "results.json"):
         env = EmailTriageEnv(num_emails=num_emails, seed=seed)
         obs, info = env.reset()
         
         results = {
+            "task_name": task_name,
             "num_emails": num_emails,
             "classifications": [],
             "metrics": {},
             "api_calls": 0
         }
         
-        task_name = "email-triage"
         print(f"[START] task={task_name}", flush=True)
-        print(f"Starting evaluation of {num_emails} emails...")
+        print(f"Starting evaluation of {num_emails} emails for task {task_name}...")
         
         done = False
         step_count = 0
@@ -134,21 +134,31 @@ class EmailTriageBaseline:
         detected_spam = stats.get("total_spam", 0) - stats.get("spam_missed", 0)
         spam_detect_rate = (detected_spam / stats.get("total_spam", 1)) * 100 if stats.get("total_spam", 0) > 0 else 100.0
         
+        # Calculate raw score
         final_score = info.get("current_score", 0)
+        
+        # OpenEnv Grader requires absolute restriction between 0.0 and 1.0 (exclusive).
+        max_possible = 1.1 * num_emails
+        min_possible = -0.3 * num_emails
+        span = max_possible - min_possible
+        norm_score = (final_score - min_possible) / span if span > 0 else 0.5
+        strict_score = max(0.01, min(0.99, float(norm_score)))
+        
         results["metrics"] = {
             "accuracy_category": cat_acc,
             "accuracy_severity": sev_acc,
             "accuracy_both": (cat_acc + sev_acc) / 2,
             "spam_detection_rate": spam_detect_rate,
-            "final_score": final_score,
+            "raw_score": final_score,
+            "normalized_score": strict_score
         }
         
         with open(output_file, 'w') as f:
             json.dump(results, f, indent=2)
             
         print(f"Evaluation complete. Results saved to {output_file}")
-        print(f"Final Score: {final_score}")
-        print(f"[END] task={task_name} score={final_score} steps={step_count}", flush=True)
+        print(f"Score for task {task_name}: {strict_score}")
+        print(f"[END] task={task_name} score={strict_score} steps={step_count}", flush=True)
         
         return results
 
@@ -157,10 +167,13 @@ if __name__ == "__main__":
     parser.add_argument("--num-emails", type=int, default=10)
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--model", type=str, default="gpt-4-turbo-preview")
-    parser.add_argument("--output", type=str, default="results.json")
     
     args = parser.parse_args()
     api_key = os.environ.get("HF_TOKEN", "")
     
     baseline = EmailTriageBaseline(api_key=api_key, model=args.model)
-    baseline.run_evaluation(args.num_emails, args.seed, args.output)
+    
+    # OpenEnv requires at least 3 tasks to be evaluated
+    baseline.run_evaluation("easy", 5, args.seed, "results_easy.json")
+    baseline.run_evaluation("medium", 10, args.seed, "results_medium.json")
+    baseline.run_evaluation("hard", 20, args.seed, "results_hard.json")
