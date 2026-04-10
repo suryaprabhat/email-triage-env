@@ -89,10 +89,14 @@ class EmailTriageBaseline:
             "api_calls": 0
         }
         
+        task_name = "email-triage"
+        print(f"[START] task={task_name}", flush=True)
         print(f"Starting evaluation of {num_emails} emails...")
         
         done = False
+        step_count = 0
         while not done:
+            step_count += 1
             print(f"Processing email {obs.email_id}...")
             
             classification = self.classify_email(obs.sender, obs.subject, obs.body)
@@ -112,6 +116,7 @@ class EmailTriageBaseline:
             })
             
             obs, reward, done, _, info = env.step(action)
+            print(f"[STEP] step={step_count} reward={float(reward)}", flush=True)
             
         stats = info.get("stats", {})
         total = env.num_emails
@@ -122,19 +127,21 @@ class EmailTriageBaseline:
         detected_spam = stats.get("total_spam", 0) - stats.get("spam_missed", 0)
         spam_detect_rate = (detected_spam / stats.get("total_spam", 1)) * 100 if stats.get("total_spam", 0) > 0 else 100.0
         
+        final_score = info.get("current_score", 0)
         results["metrics"] = {
             "accuracy_category": cat_acc,
             "accuracy_severity": sev_acc,
             "accuracy_both": (cat_acc + sev_acc) / 2,
             "spam_detection_rate": spam_detect_rate,
-            "final_score": info.get("current_score", 0),
+            "final_score": final_score,
         }
         
         with open(output_file, 'w') as f:
             json.dump(results, f, indent=2)
             
         print(f"Evaluation complete. Results saved to {output_file}")
-        print(f"Final Score: {results['metrics']['final_score']}")
+        print(f"Final Score: {final_score}")
+        print(f"[END] task={task_name} score={final_score} steps={step_count}", flush=True)
         
         return results
 
